@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="HOTEL">Hotel</string>
+    <string name="FLIGHT">Flight</string>
+    <string name="EATING">Eating</string>
+    <string name="PLAYING">Playing</string>
+    <string name="TAXI">Taxi</string>
+    <string-array name="activity_array">
+        <item>@string/HOTEL</item>
+        <item>@string/FLIGHT</item>
+        <item>@string/EATING</item>
+        <item>@string/PLAYING</item>
+        <item>@string/TAXI</item>
+    </string-array>
+</resources>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainNavigation"
+    app:startDestination="@id/overviewFragment">
+
+    <fragment
+        android:id="@+id/overviewFragment"
+        android:name="com.compi.dinhnt.travelplanner.screen.OverviewFragment"
+        android:label="OverviewFragment"
+        tools:layout="@layout/fragment_overview">>
+        <action
+            android:id="@+id/action_showDetail_travelPlan"
+            app:destination="@id/travelPlanDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/travelPlanDetailFragment"
+        android:name="com.compi.dinhnt.travelplanner.screen.TravelPlanDetailFragment"
+        android:label="TravelPlanDetailFragment"
+        tools:layout="@layout/fragment_travel_plan_detail">
+        <argument
+            android:name="travelPlanId"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_to_createEditActivity"
+            app:destination="@id/createEditActivityFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/createEditActivityFragment"
+        android:name="com.compi.dinhnt.travelplanner.screen.CreateEditActivityFragment"
+        android:label="fragment_create_edit_activity"
+        tools:layout="@layout/fragment_create_edit_activity">
+        <argument
+            android:name="travelPlanId"
+            app:argType="long" />
+        <argument
+            android:name="day"
+            app:argType="string" />
+        <argument
+            android:name="activityId"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_to_chooseLocationFragment"
+            app:destination="@id/chooseLocationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/chooseLocationFragment"
+        android:name="com.compi.dinhnt.travelplanner.screen.ChooseLocationFragment"
+        android:label="fragment_choose_location"
+        tools:layout="@layout/fragment_choose_location" />
+</navigation>
