@@ -34,36 +34,43 @@ class TravelPlanDetailFragment : Fragment() {
         val adapter = TravelPlanWithActivitiesPageAdapter(
             requireActivity(),
             binding.tabLayout,
-            binding.viewPager
-        ) { day ->
-            onCreateActivity(day)
-        }
+            binding.viewPager,
+            { day -> onCreateActivity(day) },
+            { day, activityId -> onEditActivity(day, activityId) }
+        )
         binding.viewPager.adapter = adapter
         binding.emptyActivityConstraintLayout.buttonCreateActivity.setOnClickListener {
             onCreateActivity("")
         }
         viewModel.travelPlanWithActivity.observe(viewLifecycleOwner) { data ->
-            kotlin.run {
-                binding.loadingLayout.visibility = GONE
-                if (data.activities.isEmpty()) {
-                    binding.emptyActivityConstraintLayout.visibility = VISIBLE
-                    binding.detailActivityLinearLayout.visibility = GONE
-                } else {
-                    binding.emptyActivityConstraintLayout.visibility = GONE
-                    binding.detailActivityLinearLayout.visibility = VISIBLE
-                    adapter.setTravelPlan(data)
-                }
+            binding.loadingLayout.visibility = GONE
+            if (data.activities.isEmpty()) {
+                binding.emptyActivityConstraintLayout.visibility = VISIBLE
+                binding.detailActivityLinearLayout.visibility = GONE
+            } else {
+                binding.emptyActivityConstraintLayout.visibility = GONE
+                binding.detailActivityLinearLayout.visibility = VISIBLE
+                adapter.setTravelPlan(data)
             }
         }
+        viewModel.refreshData()
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
         return binding.root
     }
 
     private fun onCreateActivity(day: String) {
-        viewModel.travelPlanWithActivity.value?.travelPlan?.id?.let {
+        viewModel.travelPlanWithActivity.value?.travelPlanCTO?.id?.let {
             this.findNavController().navigate(
-                TravelPlanDetailFragmentDirections.actionToCreateEditActivity(it, day, 0)
+                TravelPlanDetailFragmentDirections.actionToCreateEditActivity(it, day, "")
+            )
+        } ?: Log.e("Error", "navigate to createEditActivity")
+    }
+
+    private fun onEditActivity(day: String, activityId: String) {
+        viewModel.travelPlanWithActivity.value?.travelPlanCTO?.id?.let {
+            this.findNavController().navigate(
+                TravelPlanDetailFragmentDirections.actionToCreateEditActivity(it, day, activityId)
             )
         } ?: Log.e("Error", "navigate to createEditActivity")
     }

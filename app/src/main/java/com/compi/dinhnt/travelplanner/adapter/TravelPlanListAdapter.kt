@@ -45,7 +45,7 @@ class TravelPlanListAdapter(private val onClickListener: OnClickListener) :
         }
     }
 
-    class OnClickListener(val clickListener: (travelPlan: TravelPlan) -> Unit) {
-        fun onClick(travelPlan: TravelPlan) = clickListener(travelPlan)
+    class OnClickListener(val clickListener: (travelPlanCTO: TravelPlan) -> Unit) {
+        fun onClick(travelPlanCTO: TravelPlan) = clickListener(travelPlanCTO)
     }
 }

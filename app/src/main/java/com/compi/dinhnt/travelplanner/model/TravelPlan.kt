@@ -6,16 +6,25 @@ import com.compi.dinhnt.travelplanner.R
 import java.util.*
 
 
-@Entity
 data class TravelPlan(
-    @PrimaryKey
     val id: Long,
     val name: String,
-    val startDate: Date,
-    val endDate: Date,
+    val activityNumber: Int,
+    val startDate: Date?,
+    val endDate: Date?,
     val weathers: List<Weather>? = null
 ) {
     fun toListWeathersDetail() = weathers?.map { it.weather }
+}
+
+
+@Entity(tableName = "travelplan")
+data class TravelPlanCTO(
+    @PrimaryKey
+    val id: Long,
+    val name: String,
+    val weathers: List<Weather>? = null
+) {
 }
 
 data class Weather(

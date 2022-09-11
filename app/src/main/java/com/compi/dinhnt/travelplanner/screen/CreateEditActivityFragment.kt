@@ -5,7 +5,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.compi.dinhnt.travelplanner.R
@@ -13,8 +12,11 @@ import com.compi.dinhnt.travelplanner.databinding.FragmentCreateEditActivityBind
 import com.compi.dinhnt.travelplanner.model.ActivityType
 import com.compi.dinhnt.travelplanner.view_model.CreateEditActivityViewModel
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
 class CreateEditActivityFragment : Fragment() {
 
@@ -26,17 +28,44 @@ class CreateEditActivityFragment : Fragment() {
             CreateEditActivityViewModel.Factory(activity.application)
         )[CreateEditActivityViewModel::class.java]
     }
+    private val formatter = SimpleDateFormat("yyyy-MM-dd")
+
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentCreateEditActivityBinding.inflate(inflater, container, false)
+        try {
+            val travelPlanId =
+                CreateEditActivityFragmentArgs.fromBundle(requireArguments()).travelPlanId
+            val day = CreateEditActivityFragmentArgs.fromBundle(requireArguments()).day
+            val activityId =
+                CreateEditActivityFragmentArgs.fromBundle(requireArguments()).activityId
+            viewModel.init(travelPlanId, day, activityId)
+        } catch (e: Exception) {
+        }
         binding.viewModel = viewModel
         makeButtons()
         makeDateTimePicker()
         binding.buttonChooseLocation.setOnClickListener {
-            findNavController().navigate(CreateEditActivityFragmentDirections.actionToChooseLocationFragment())
+            findNavController().navigate(
+                CreateEditActivityFragmentDirections.actionToChooseLocationFragment()
+            )
+        }
+        viewModel.showSnackBarInt.observe(viewLifecycleOwner) {
+            Snackbar.make(this.requireView(), getString(it), Snackbar.LENGTH_LONG).show()
+        }
+        viewModel.time.observe(viewLifecycleOwner) { time ->
+            time?.let {
+                binding.inputTime.text = "${time / 60}:${String.format("%02d", time % 60)}"
+            } ?: run { binding.inputTime.text = "Choose Time" }
+        }
+        viewModel.date.observe(viewLifecycleOwner) { date ->
+            date?.let {
+                binding.inputDate.text = formatter.format(Date(date))
+            } ?: run { binding.inputDate.text = "Choose Date" }
         }
         return binding.root
     }
@@ -51,13 +80,13 @@ class CreateEditActivityFragment : Fragment() {
             val picker =
                 MaterialTimePicker.Builder()
                     .setTimeFormat(TimeFormat.CLOCK_12H)
-                    .setHour(12)
-                    .setMinute(10)
+                    .setHour(9)
+                    .setMinute(0)
                     .setTitleText("Choose Your Date")
                     .build()
             picker.show(childFragmentManager, CHOOSE_TIME)
             picker.addOnPositiveButtonClickListener {
-                binding.inputTime.text = "${picker.hour}: ${picker.minute}"
+                viewModel.time.value = (picker.hour * 60 + picker.minute).toLong()
             }
         }
 
@@ -69,7 +98,7 @@ class CreateEditActivityFragment : Fragment() {
                     .build()
             datePicker.show(childFragmentManager, CHOOSE_DATE)
             datePicker.addOnPositiveButtonClickListener {
-                binding.inputDate.text = "${datePicker.headerText}"
+                viewModel.date.value = it
             }
         }
     }
@@ -95,7 +124,7 @@ class CreateEditActivityFragment : Fragment() {
             button.setOnClickListener {
                 loseFocus()
                 mapButton[button]?.let {
-                    viewModel.setActivityType(it.third)
+                    viewModel.activityType.value = it.third
                 }
             }
         }
@@ -109,10 +138,15 @@ class CreateEditActivityFragment : Fragment() {
                     e.setTextColor(resources.getColor(R.color.black))
                 }
             }
-            binding.labelNameActivityTextView.text = mapLabel[activityType]
+            binding.labelNameActivityTextView.text = "${mapLabel[activityType]} *"
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.reset()
+
+    }
 
     companion object {
         private val CHOOSE_TIME = "chooseTime"

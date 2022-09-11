@@ -1,25 +1,35 @@
 package com.compi.dinhnt.travelplanner
 
+import android.view.View.GONE
+import android.view.View.VISIBLE
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager2.widget.ViewPager2
-import com.compi.dinhnt.travelplanner.adapter.TravelPlanWithActivitiesPageAdapter
 import com.compi.dinhnt.travelplanner.adapter.TravelPlanListAdapter
-import com.compi.dinhnt.travelplanner.model.ActivityType
-import com.compi.dinhnt.travelplanner.model.TravelPlan
-import com.compi.dinhnt.travelplanner.model.TravelPlanWithActivity
-import com.compi.dinhnt.travelplanner.model.WeatherDetail
+import com.compi.dinhnt.travelplanner.model.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-@BindingAdapter("startDate", "endDate")
-fun bindDates(textView: TextView, startDate: Date, endDate: Date) {
+@BindingAdapter("subtitleTravelPlan")
+fun bindSubtitle(textView: TextView, subtitleTravelPlan: TravelPlan) {
+    val startDate = subtitleTravelPlan.startDate
+    val endDate = subtitleTravelPlan.endDate
     val formatter = SimpleDateFormat("MMM dd")
-    textView.text =
-        "${formatter.format(startDate)} - ${formatter.format(endDate)}"
+    if (startDate == null || endDate == null) {
+        if (subtitleTravelPlan.activityNumber == 0) {
+            textView.text = "Empty"
+        } else {
+            textView.text = ""
+        }
+    } else if (startDate == endDate) {
+        textView.text = formatter.format(startDate)
+    } else {
+        textView.text =
+            "${formatter.format(startDate)} - ${formatter.format(endDate)}"
+    }
 }
 
 @BindingAdapter("listTravelPlans")
@@ -28,24 +38,16 @@ fun bindListTravelPlans(recyclerView: RecyclerView, data: List<TravelPlan>?) {
     adapter.submitList(data)
 }
 
-@BindingAdapter("listWeather")
-fun bindListTravelPlans(linearLayout: LinearLayout, data: List<WeatherDetail>?) {
-    val data = listOf(WeatherDetail.CLEAR_SKY, WeatherDetail.RAIN, WeatherDetail.BROKEN_CLOUDS)
-    linearLayout.removeAllViews()
-    data?.forEach {
-        val imageView = ImageView(linearLayout.context)
-        imageView.setImageResource(it.getIcon())
-        linearLayout.addView(imageView)
-    }
-}
-
-@BindingAdapter("travelPlanWithActivity")
-fun bindTravelPlanWithActivity(viewPager: ViewPager2, data: TravelPlanWithActivity?) {
-    data?.run {
-        val adapter = viewPager.adapter as TravelPlanWithActivitiesPageAdapter
-        adapter.setTravelPlan(data)
-    }
-}
+//@BindingAdapter("listWeather")
+//fun bindListTravelPlans(linearLayout: LinearLayout, data: List<WeatherDetail>?) {
+//    val data = listOf(WeatherDetail.CLEAR_SKY, WeatherDetail.RAIN, WeatherDetail.BROKEN_CLOUDS)
+//    linearLayout.removeAllViews()
+//    data?.forEach {
+//        val imageView = ImageView(linearLayout.context)
+//        imageView.setImageResource(it.getIcon())
+//        linearLayout.addView(imageView)
+//    }
+//}
 
 @BindingAdapter("activityTime")
 fun bindTravelPlanActivityTime(textView: TextView, time: Long?) {
@@ -79,6 +81,16 @@ fun bindActivityIcon(imageView: ImageView, activityType: ActivityType?) {
     }
 }
 
+@BindingAdapter("locationText")
+fun bindLocationText(textView: TextView, location: Location?) {
+    if (location != null) {
+        textView.visibility = VISIBLE
+        textView.text = "Location: ${location.locationName}"
+    } else {
+        textView.visibility = GONE
+    }
+}
+
 @BindingAdapter("detailActivityInfo")
 fun bindDetailActivityInfo(textView: TextView, detailInfo: Map<String, String>?) {
     detailInfo?.let {
@@ -94,4 +106,11 @@ fun bindDetailActivityInfo(textView: TextView, detailInfo: Map<String, String>?)
         }
         textView.text = string
     }
+}
+
+@BindingAdapter("location")
+fun bindLocation(button: Button, locationName: String?) {
+    locationName?.let {
+        button.text = locationName
+    } ?: run { button.text = "Location ?" }
 }

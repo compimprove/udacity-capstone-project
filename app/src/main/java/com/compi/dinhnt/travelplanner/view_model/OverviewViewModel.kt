@@ -4,10 +4,13 @@ import android.app.Application
 import androidx.lifecycle.*
 import com.compi.dinhnt.travelplanner.database.getDatabase
 import com.compi.dinhnt.travelplanner.database.seedDatabase
+import com.compi.dinhnt.travelplanner.model.Activity
+import com.compi.dinhnt.travelplanner.model.TravelPlan
 import com.compi.dinhnt.travelplanner.model.TravelPlanWithActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.*
 
 class OverviewViewModel(app: Application) : AndroidViewModel(app) {
     private val database = getDatabase(app)
@@ -16,7 +19,31 @@ class OverviewViewModel(app: Application) : AndroidViewModel(app) {
     val plansWithActivity: LiveData<List<TravelPlanWithActivity>>
         get() = _plans
 
-    val plans = database.travelPlanDao.getTravelPlans()
+    val plans = Transformations.map(plansWithActivity) { _plansWithActivity ->
+        _plansWithActivity.map {
+            it.activities.sortWith { o1, o2 ->
+                if (o1 != null && o2 != null) {
+                    o1.date.compareTo(o2.date)
+                } else {
+                    0
+                }
+            }
+            var startDate: Date? = null
+            var endDate: Date? = null
+            if (it.activities.isNotEmpty()) {
+                startDate = it.activities[0].date
+                endDate = it.activities[it.activities.size - 1].date
+            }
+            TravelPlan(
+                it.travelPlanCTO.id,
+                it.travelPlanCTO.name,
+                it.activities.size,
+                startDate,
+                endDate,
+                it.travelPlanCTO.weathers,
+            )
+        }
+    }
 
     init {
         refreshTravelPlanWithActivity()

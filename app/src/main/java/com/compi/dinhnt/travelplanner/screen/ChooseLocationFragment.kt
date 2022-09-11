@@ -11,12 +11,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.compi.dinhnt.travelplanner.R
 import com.compi.dinhnt.travelplanner.databinding.FragmentChooseLocationBinding
 import com.compi.dinhnt.travelplanner.view_model.CreateEditActivityViewModel
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import java.util.*
@@ -24,8 +27,9 @@ import java.util.*
 class ChooseLocationFragment : Fragment(), OnMapReadyCallback {
 
     private lateinit var map: GoogleMap
+    private val startLocation = LatLng(37.424, -122.079)
     private var locationMarker: Marker? = null
-    private val viewModel: CreateEditActivityViewModel by lazy {
+    private val _viewModel: CreateEditActivityViewModel by lazy {
         val activity = requireNotNull(this.activity)
         ViewModelProvider(
             requireActivity(),
@@ -41,6 +45,9 @@ class ChooseLocationFragment : Fragment(), OnMapReadyCallback {
         val mapFragment = childFragmentManager
             .findFragmentById(R.id.map_fragment) as SupportMapFragment
         mapFragment.getMapAsync(this)
+        binding.saveButton.setOnClickListener{
+            findNavController().popBackStack()
+        }
         return binding.root
     }
 
@@ -49,6 +56,22 @@ class ChooseLocationFragment : Fragment(), OnMapReadyCallback {
         enableMyLocation()
         setPoiClick(map)
         setMapLongClick(map)
+        if (_viewModel.latitude.value != null
+            && _viewModel.longitude.value != null
+            && _viewModel.locationName.value != null
+        ) {
+            val centerLocation = LatLng(_viewModel.latitude.value!!, _viewModel.longitude.value!!)
+            val poiName = _viewModel.locationName.value!!
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(centerLocation, 15f))
+            locationMarker?.remove()
+            locationMarker = map.addMarker(
+                MarkerOptions()
+                    .position(centerLocation)
+                    .title(poiName)
+            )
+        } else {
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(startLocation, 15f))
+        }
     }
 
     private fun setPoiClick(map: GoogleMap) {
@@ -60,12 +83,12 @@ class ChooseLocationFragment : Fragment(), OnMapReadyCallback {
                     .title(poi.name)
             )
             locationMarker?.showInfoWindow()
+            _viewModel.setLocation(poi.latLng, poi.name)
         }
     }
 
     private fun setMapLongClick(map: GoogleMap) {
         map.setOnMapLongClickListener { latLng ->
-            // A Snippet is Additional text that's displayed below the title.
             val snippet = String.format(
                 Locale.getDefault(),
                 "Lat: %1$.5f, Long: %2$.5f",
@@ -82,6 +105,7 @@ class ChooseLocationFragment : Fragment(), OnMapReadyCallback {
 
             )
             locationMarker?.showInfoWindow()
+            _viewModel.setLocation(latLng, title)
         }
     }
 

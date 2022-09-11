@@ -12,9 +12,11 @@ import com.compi.dinhnt.travelplanner.model.Activity
 class DayActivityDetail(
     private var day: String,
     private var activities: List<Activity>,
-    private val clickListener: (day: String) -> Unit
+    private val clickListener: (day: String) -> Unit,
+    private val onEditActivity: (day: String, activityId: String) -> Unit
 ) : Fragment() {
 
+    private lateinit var adapter: ActivityListAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -22,17 +24,16 @@ class DayActivityDetail(
     ): View {
         val binding = FragmentDayActivityDetailBinding.inflate(inflater, container, false)
         binding.buttonCreateActivity.setOnClickListener { clickListener(day) }
-        val adapter = ActivityListAdapter(ActivityListAdapter.OnClickListener {})
+        adapter = ActivityListAdapter(ActivityListAdapter.OnClickListener { activity ->
+            onEditActivity(day, activity.id)
+        })
         binding.activityListRecyclerView.adapter = adapter
         adapter.submitList(activities)
         return binding.root
-//        return if (activities.isEmpty()) {
-//            val binding = FragmentDayActivityDetailEmptyBinding.inflate(inflater, container, false)
-//            binding.buttonCreateActivity.setOnClickListener { clickListener(day) }
-//            binding.root
-//        } else {
-//
-//        }
+    }
+
+    fun updateData(activities: List<Activity>) {
+        adapter.submitList(activities)
     }
 
     companion object {
@@ -40,8 +41,9 @@ class DayActivityDetail(
         fun newInstance(
             day: String,
             activities: List<Activity>,
-            clickListener: (day: String) -> Unit
+            onCreateActivity: (day: String) -> Unit,
+            onEditActivity: (day: String, activityId: String) -> Unit
         ) =
-            DayActivityDetail(day, activities, clickListener)
+            DayActivityDetail(day, activities, onCreateActivity, onEditActivity)
     }
 }

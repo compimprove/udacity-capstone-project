@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.compi.dinhnt.travelplanner.model.Activity
 import com.compi.dinhnt.travelplanner.model.ActivityType
-import com.compi.dinhnt.travelplanner.model.TravelPlan
+import com.compi.dinhnt.travelplanner.model.TravelPlanCTO
 import com.compi.dinhnt.travelplanner.model.TravelPlanWithActivity
 import java.util.*
 
@@ -18,13 +18,17 @@ interface TravelPlanDao {
 
     @Transaction
     @Query("select * from travelplan where travelplan.id = :id")
-    fun getTravelPlanWithActivity(id: Long): LiveData<TravelPlanWithActivity>
+    fun travelPlanWithActivity(id: Long): LiveData<TravelPlanWithActivity>
+
+    @Transaction
+    @Query("select * from travelplan where travelplan.id = :id")
+    suspend fun getTravelPlanWithActivity(id: Long): TravelPlanWithActivity
 
     @Query("select * from travelplan")
-    fun getTravelPlans(): LiveData<List<TravelPlan>>
+    fun getTravelPlans(): LiveData<List<TravelPlanCTO>>
 
     @Insert
-    suspend fun insert(travelPlan: TravelPlan)
+    suspend fun insert(travelPlanCTO: TravelPlanCTO)
 
     @Query("DELETE FROM travelplan")
     suspend fun clear()
@@ -35,12 +39,18 @@ interface ActivityDao {
     @Insert
     suspend fun insert(activity: Activity)
 
+    @Query("select * from activity where activity.id = :id")
+    suspend fun get(id: String): Activity
+
+    @Update
+    suspend fun update(activity: Activity)
+
     @Query("DELETE FROM activity")
     suspend fun clear()
 }
 
 
-@Database(entities = [TravelPlan::class, Activity::class], version = 7)
+@Database(entities = [TravelPlanCTO::class, Activity::class], version = 9)
 @TypeConverters(
     ActivityDateConverter::class,
     MapStringStringConverter::class,
@@ -84,102 +94,88 @@ suspend fun seedDatabase(db: LocalDatabase) {
     db.travelPlanDao.clear()
     db.activityDao.clear()
     db.travelPlanDao.insert(
-        TravelPlan(
+        TravelPlanCTO(
             1,
             "TravelPlan 1",
-            Date(2022 - 1900, 8, 15),
-            Date(2022 - 1900, 8, 25)
         )
     )
     db.travelPlanDao.insert(
-        TravelPlan(
+        TravelPlanCTO(
             2,
             "TravelPlan 2",
-            Date(2022 - 1900, 8, 15),
-            Date(2022 - 1900, 8, 25)
         )
     )
     db.travelPlanDao.insert(
-        TravelPlan(
+        TravelPlanCTO(
             3,
             "TravelPlan 3",
-            Date(2022 - 1900, 8, 15),
-            Date(2022 - 1900, 8, 25)
         )
     )
     db.travelPlanDao.insert(
-        TravelPlan(
+        TravelPlanCTO(
             4,
             "TravelPlan 4",
-            Date(2022 - 1900, 8, 15),
-            Date(2022 - 1900, 8, 25)
         )
     )
     db.activityDao.insert(
         Activity(
-            6,
             "Activity 1",
             ActivityType.FLIGHT,
             Date(2022 - 1900, 8, 15),
             8 * 60,
             1, null,
-            mapOf("Vanilla" to "Vanilla", "Chocolate" to "Chocolate")
+            "Do nothing"
         )
     )
     db.activityDao.insert(
         Activity(
-            1,
             "Activity 1",
             ActivityType.EATING,
             Date(2022 - 1900, 8, 15),
             8 * 60 + 30,
             1,
             null,
-            mapOf("Vanilla" to "Vanilla", "Chocolate" to "Chocolate")
+            "Do nothing"
         )
     )
     db.activityDao.insert(
         Activity(
-            2,
             "Activity 2",
             ActivityType.PLAYING,
             Date(2022 - 1900, 8, 15),
             12 * 60 + 30,
             1, null,
-            mapOf("Vanilla" to "Vanilla", "Chocolate" to "Chocolate")
+            "Do nothing"
         )
     )
     db.activityDao.insert(
         Activity(
-            3,
             "Activity 3",
             ActivityType.TAXI,
             Date(2022 - 1900, 8, 15),
             20 * 60,
             1, null,
-            mapOf("Vanilla" to "Vanilla", "Chocolate" to "Chocolate")
+            "Do nothing"
         )
     )
     db.activityDao.insert(
         Activity(
-            4,
             "Activity 4",
             ActivityType.FLIGHT,
             Date(2022 - 1900, 8, 16),
             8 * 60,
             1, null,
-            mapOf("Rocky Road" to "Rocky Road", "Rocky Chocolate" to "Rocky Chocolate")
+            "Do nothing"
         )
     )
     db.activityDao.insert(
         Activity(
-            5,
             "Activity 5",
             ActivityType.HOTEL,
             Date(2022 - 1900, 8, 17),
             8 * 60,
             1, null,
-            mapOf("Rocky Road" to "Rocky Road", "Chocolate" to "Chocolate")
+            "Do nothing"
         )
     )
 }

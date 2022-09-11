@@ -1,22 +1,16 @@
 package com.compi.dinhnt.travelplanner.model
 
 import android.content.res.Resources
-import android.media.MediaPlayer.MetricsConstants.PLAYING
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 import com.compi.dinhnt.travelplanner.R
 import com.google.android.gms.maps.model.LatLng
-import java.text.SimpleDateFormat
-import java.time.Duration
-import java.time.Period
 import java.util.*
 
 @Entity
 data class Activity(
-    @PrimaryKey
-    val id: Long,
     val name: String,
     val type: ActivityType,
     val date: Date,
@@ -24,7 +18,9 @@ data class Activity(
     val travelPlanId: Long,
     @Embedded
     val location: Location? = null,
-    val detailInfo: Map<String, String>
+    val note: String?,
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString()
 ) : Comparable<Activity> {
     override fun compareTo(other: Activity): Int {
         return time.compareTo(other.time)
@@ -53,12 +49,12 @@ enum class ActivityType {
 }
 
 data class TravelPlanWithActivity(
-    @Embedded val travelPlan: TravelPlan,
+    @Embedded val travelPlanCTO: TravelPlanCTO,
     @Relation(
         parentColumn = "id",
         entityColumn = "travelPlanId"
     )
-    val activities: List<Activity>
+    val activities: MutableList<Activity>
 )
 
 data class Location(

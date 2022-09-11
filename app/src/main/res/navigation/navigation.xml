@@ -39,7 +39,7 @@
             app:argType="string" />
         <argument
             android:name="activityId"
-            app:argType="long" />
+            app:argType="string" />
         <action
             android:id="@+id/action_to_chooseLocationFragment"
             app:destination="@id/chooseLocationFragment" />
