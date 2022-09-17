@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.compi.dinhnt.travelplanner.R
 import com.compi.dinhnt.travelplanner.databinding.FragmentChooseLocationBinding
+import com.compi.dinhnt.travelplanner.setDisplayHomeAsUpEnabled
 import com.compi.dinhnt.travelplanner.view_model.CreateEditActivityViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -22,6 +23,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import org.koin.android.ext.android.inject
 import java.util.*
 
 class ChooseLocationFragment : Fragment(), OnMapReadyCallback {
@@ -29,14 +31,7 @@ class ChooseLocationFragment : Fragment(), OnMapReadyCallback {
     private lateinit var map: GoogleMap
     private val startLocation = LatLng(37.424, -122.079)
     private var locationMarker: Marker? = null
-    private val _viewModel: CreateEditActivityViewModel by lazy {
-        val activity = requireNotNull(this.activity)
-        ViewModelProvider(
-            requireActivity(),
-            CreateEditActivityViewModel.Factory(activity.application)
-        )[CreateEditActivityViewModel::class.java]
-    }
-
+    private val _viewModel: CreateEditActivityViewModel by inject()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -45,9 +40,10 @@ class ChooseLocationFragment : Fragment(), OnMapReadyCallback {
         val mapFragment = childFragmentManager
             .findFragmentById(R.id.map_fragment) as SupportMapFragment
         mapFragment.getMapAsync(this)
-        binding.saveButton.setOnClickListener{
+        binding.saveButton.setOnClickListener {
             findNavController().popBackStack()
         }
+        setDisplayHomeAsUpEnabled(true)
         return binding.root
     }
 
@@ -145,6 +141,7 @@ class ChooseLocationFragment : Fragment(), OnMapReadyCallback {
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             ChooseLocationFragment()
+
         private val REQUEST_LOCATION_PERMISSION = 1
     }
 }

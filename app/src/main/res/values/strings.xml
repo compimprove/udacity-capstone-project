@@ -2,4 +2,40 @@
     <string name="app_name">Travel Planner</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="location_required_error">Location services must be enabled to use the app</string>
+    <string name="permission_denied_explanation">You need to grant location permission in order to select the location.</string>
+    <string name="settings">Settings</string>
+    <string name="geofences_not_added">Problem in adding geofences.</string>
+    <string name="geofences_added">Geofences added</string>
+
+    <!-- Error strings -->
+    <string name="geofence_unknown_error">Unknown error: the Geofence service is not available now.</string>
+    <string name="geofence_not_available">Geofence service is not available now. Go to Settings>Location>Mode and choose High accuracy.</string>
+    <string name="geofence_too_many_geofences">Your app has registered too many geofences.</string>
+    <string name="geofence_too_many_pending_intents">You have provided too many PendingIntents to the addGeofences() call.</string>
+    <string name="unknown_geofence_error">
+        Unknown error: the Geofence service is not available now
+    </string>
+    <string name="error_adding_geofence">Error Happened, Can\'t Add Geofence</string>
+    <string name="congrat_detail">You reach your plan location!</string>
+    <string name="go_to_your_plan">Go to your plan</string>
+    <string name="save">Save</string>
+    <string name="name_require">Name *</string>
+    <string name="date_require">Date *</string>
+    <string name="choose_date">Choose Date</string>
+    <string name="time_require">Time *</string>
+    <string name="choose_time">Choose Time</string>
+    <string name="what_will_you_do">What will you do?</string>
+    <string name="choose_your_place">Choose your place</string>
+    <string name="note">Note</string>
+    <string name="addtional_note">Additional Note</string>
+    <string name="create_your_first_activity">Create Your First Activity</string>
+    <string name="create_a_plan">Create A Plan</string>
+    <string name="edit_plan">Edit Plan</string>
+    <string name="create">Create</string>
+    <string name="plan_name">Plan name</string>
+    <string name="your_activity_name">Your activity name</string>
+    <string name="travel_planner">Travel Planner</string>
+    <string name="date_sample">Jan 1 - Jan 10</string>
+    <string name="edit_travel_plan">Edit Travel Plan</string>
 </resources>

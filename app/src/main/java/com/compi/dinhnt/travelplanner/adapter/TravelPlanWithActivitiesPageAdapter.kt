@@ -5,7 +5,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.adapter.FragmentViewHolder
 import androidx.viewpager2.widget.ViewPager2
-import com.compi.dinhnt.travelplanner.model.Activity
+import com.compi.dinhnt.travelplanner.model.TravelActivity
 import com.compi.dinhnt.travelplanner.model.TravelPlanWithActivity
 import com.compi.dinhnt.travelplanner.screen.DayActivityDetail
 import com.google.android.material.tabs.TabLayout
@@ -23,9 +23,11 @@ class TravelPlanWithActivitiesPageAdapter(
 ) : FragmentStateAdapter(fa) {
     private val formatter = SimpleDateFormat("yyyy-MM-dd")
     private var _travelPlanWithActivity: TravelPlanWithActivity? = null
-    private var mapTravelPlanWithActivities = sortedMapOf<String, MutableList<Activity>>()
+    private var mapTravelPlanWithActivities = sortedMapOf<String, MutableList<TravelActivity>>()
     private var tabLayoutMediator: TabLayoutMediator? = null
     private val createdFragment = mutableMapOf<Int, DayActivityDetail>()
+
+    
 
     override fun createFragment(position: Int): Fragment {
         val entry = mapTravelPlanWithActivities.entries.toTypedArray()[position]

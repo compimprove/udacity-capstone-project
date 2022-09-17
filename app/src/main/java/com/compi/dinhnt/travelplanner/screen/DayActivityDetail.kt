@@ -7,11 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import com.compi.dinhnt.travelplanner.adapter.ActivityListAdapter
 import com.compi.dinhnt.travelplanner.databinding.FragmentDayActivityDetailBinding
-import com.compi.dinhnt.travelplanner.model.Activity
+import com.compi.dinhnt.travelplanner.model.TravelActivity
 
 class DayActivityDetail(
     private var day: String,
-    private var activities: List<Activity>,
+    private var activities: List<TravelActivity>,
     private val clickListener: (day: String) -> Unit,
     private val onEditActivity: (day: String, activityId: String) -> Unit
 ) : Fragment() {
@@ -32,7 +32,7 @@ class DayActivityDetail(
         return binding.root
     }
 
-    fun updateData(activities: List<Activity>) {
+    fun updateData(activities: List<TravelActivity>) {
         adapter.submitList(activities)
     }
 
@@ -40,7 +40,7 @@ class DayActivityDetail(
         @JvmStatic
         fun newInstance(
             day: String,
-            activities: List<Activity>,
+            activities: List<TravelActivity>,
             onCreateActivity: (day: String) -> Unit,
             onEditActivity: (day: String, activityId: String) -> Unit
         ) =

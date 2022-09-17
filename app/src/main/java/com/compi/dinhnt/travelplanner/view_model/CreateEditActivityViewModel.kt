@@ -2,54 +2,64 @@ package com.compi.dinhnt.travelplanner.view_model
 
 import android.app.Application
 import androidx.lifecycle.*
-import com.compi.dinhnt.travelplanner.database.getDatabase
-import com.compi.dinhnt.travelplanner.model.Activity
+import androidx.navigation.fragment.findNavController
+import com.compi.dinhnt.travelplanner.database.LocalDatabase
+import com.compi.dinhnt.travelplanner.model.TravelActivity
 import com.compi.dinhnt.travelplanner.model.ActivityType
 import com.compi.dinhnt.travelplanner.model.Location
+import com.compi.dinhnt.travelplanner.network.Network
+import com.compi.dinhnt.travelplanner.network.getWeather
 import com.google.android.gms.maps.model.LatLng
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import org.json.JSONObject
+import retrofit2.await
 import java.text.SimpleDateFormat
 import java.util.*
 
 
-class CreateEditActivityViewModel(app: Application) :
+class CreateEditActivityViewModel(app: Application, private val database: LocalDatabase) :
     AndroidViewModel(app) {
-    private val database = getDatabase(app)
     private var activityId: String? = null
-    private var travelPlanId: Long = 0
+    private var travelPlanId: String = ""
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd")
 
-    var activityType = MutableLiveData(ActivityType.HOTEL)
+    var activityType = MutableLiveData<ActivityType>()
     var locationName = MutableLiveData<String>()
     var activityName = MutableLiveData<String>()
-    var note = MutableLiveData<String>()
+    var note = MutableLiveData<String?>()
     var latitude = MutableLiveData<Double>()
     var longitude = MutableLiveData<Double>()
     var time = MutableLiveData<Long>()
     var date = MutableLiveData<Long>()
+    var navigateBack = MutableLiveData(false)
+
+    var createTravelActivityGeofence = MutableLiveData<TravelActivity?>()
 
     val showSnackBarInt = MutableLiveData<Int>()
 
     fun reset() {
         activityId = null
-        travelPlanId = 0
-        activityType = MutableLiveData(ActivityType.HOTEL)
+        travelPlanId = ""
+        activityType = MutableLiveData<ActivityType>()
         activityName = MutableLiveData<String>()
         locationName = MutableLiveData<String>()
         latitude = MutableLiveData<Double>()
         longitude = MutableLiveData<Double>()
         time = MutableLiveData<Long>()
         date = MutableLiveData<Long>()
+        navigateBack = MutableLiveData(false)
     }
 
-    fun init(travelPlanId: Long, day: String, id: String) {
+    fun navigateBack() {
+        navigateBack.value = true
+    }
+
+    fun init(travelPlanId: String, day: String, id: String) {
         this.travelPlanId = travelPlanId
         if (id != "") {
             activityId = id
             viewModelScope.launch {
-                val activity = database.activityDao.get(id)
+                val activity = database.activityDao.get(id) ?: return@launch
                 if (activityName.value == null) {
                     activityName.value = activity.name
                 }
@@ -66,10 +76,13 @@ class CreateEditActivityViewModel(app: Application) :
                     locationName.value = activity.location?.locationName
                 }
                 if (longitude.value == null) {
-                    longitude.value = activity.location?.latLong?.longitude
+                    longitude.value = activity.location?.longitude
                 }
                 if (latitude.value == null) {
-                    latitude.value = activity.location?.latLong?.latitude
+                    latitude.value = activity.location?.latitude
+                }
+                if (note.value == null) {
+                    note.value = activity.note
                 }
             }
         } else if (day != "") {
@@ -89,12 +102,12 @@ class CreateEditActivityViewModel(app: Application) :
                 && longitude.value != null
                 && latitude.value != null
             ) {
-                Location(LatLng(longitude.value!!, latitude.value!!), locationName.value!!)
+                Location(latitude.value!!, longitude.value!!, locationName.value!!)
             } else {
                 null
             }
             if (activityId == null) {
-                val activity = Activity(
+                val travelActivity = TravelActivity(
                     activityName.value!!,
                     activityType.value!!,
                     Date(date.value!!),
@@ -104,12 +117,12 @@ class CreateEditActivityViewModel(app: Application) :
                     note.value
                 )
                 viewModelScope.launch {
-                    withContext(Dispatchers.IO) {
-                        database.activityDao.insert(activity)
-                    }
+                    database.activityDao.insert(travelActivity)
+                    createTravelActivityGeofence.value = travelActivity
+                    updateWeather(travelActivity)
                 }
             } else {
-                val activity = Activity(
+                val travelActivity = TravelActivity(
                     activityName.value!!,
                     activityType.value!!,
                     Date(date.value!!),
@@ -117,14 +130,39 @@ class CreateEditActivityViewModel(app: Application) :
                     travelPlanId,
                     location,
                     note.value,
+                    null,
                     activityId!!
                 )
                 viewModelScope.launch {
-                    withContext(Dispatchers.IO) {
-                        database.activityDao.update(activity)
+                    val oldActivity = database.activityDao.get(activityId!!)
+                    database.activityDao.update(travelActivity)
+                    if (oldActivity?.location?.locationName != travelActivity.location?.locationName) {
+                        createTravelActivityGeofence.value = travelActivity
+                    } else {
+                        navigateBack()
                     }
+                    updateWeather(travelActivity)
                 }
             }
+        }
+    }
+
+    fun onCancel() {
+        navigateBack()
+    }
+
+    fun receivedSaveEvent() {
+        createTravelActivityGeofence.value = null
+    }
+
+    private suspend fun updateWeather(travelActivity: TravelActivity) {
+        travelActivity.location?.let {
+            val data = Network.weatherApiService.getWeatherByLatLong(
+                it.latitude,
+                it.longitude
+            ).await()
+            val weather = JSONObject(data).getWeather(travelActivity.date)
+            database.activityDao.updateWeather(travelActivity.id, weather, 0)
         }
     }
 
@@ -139,17 +177,17 @@ class CreateEditActivityViewModel(app: Application) :
             return true
         }
     }
-
-    class Factory(
-        private val app: Application
-    ) :
-        ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(CreateEditActivityViewModel::class.java)) {
-                @Suppress("UNCHECKED_CAST")
-                return CreateEditActivityViewModel(app) as T
-            }
-            throw IllegalArgumentException("Unable to construct viewmodel")
-        }
-    }
+//
+//    class Factory(
+//        private val app: Application
+//    ) :
+//        ViewModelProvider.Factory {
+//        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+//            if (modelClass.isAssignableFrom(CreateEditActivityViewModel::class.java)) {
+//                @Suppress("UNCHECKED_CAST")
+//                return CreateEditActivityViewModel(app, get() as LocalDatabase) as T
+//            }
+//            throw IllegalArgumentException("Unable to construct viewmodel")
+//        }
+//    }
 }

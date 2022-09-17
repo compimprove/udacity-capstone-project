@@ -38,16 +38,12 @@ fun bindListTravelPlans(recyclerView: RecyclerView, data: List<TravelPlan>?) {
     adapter.submitList(data)
 }
 
-//@BindingAdapter("listWeather")
-//fun bindListTravelPlans(linearLayout: LinearLayout, data: List<WeatherDetail>?) {
-//    val data = listOf(WeatherDetail.CLEAR_SKY, WeatherDetail.RAIN, WeatherDetail.BROKEN_CLOUDS)
-//    linearLayout.removeAllViews()
-//    data?.forEach {
-//        val imageView = ImageView(linearLayout.context)
-//        imageView.setImageResource(it.getIcon())
-//        linearLayout.addView(imageView)
-//    }
-//}
+@BindingAdapter("weatherDetail")
+fun bindListTravelPlans(imageView: ImageView, weatherDetail: WeatherDetail?) {
+    weatherDetail?.let {
+        imageView.setImageResource(weatherDetail.getIcon())
+    }
+}
 
 @BindingAdapter("activityTime")
 fun bindTravelPlanActivityTime(textView: TextView, time: Long?) {

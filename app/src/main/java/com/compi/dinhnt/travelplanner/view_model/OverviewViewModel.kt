@@ -2,22 +2,33 @@ package com.compi.dinhnt.travelplanner.view_model
 
 import android.app.Application
 import androidx.lifecycle.*
-import com.compi.dinhnt.travelplanner.database.getDatabase
-import com.compi.dinhnt.travelplanner.database.seedDatabase
-import com.compi.dinhnt.travelplanner.model.Activity
+import com.compi.dinhnt.travelplanner.database.LocalDatabase
+import com.compi.dinhnt.travelplanner.model.TravelActivity
 import com.compi.dinhnt.travelplanner.model.TravelPlan
+import com.compi.dinhnt.travelplanner.model.TravelPlanCTO
 import com.compi.dinhnt.travelplanner.model.TravelPlanWithActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
 
-class OverviewViewModel(app: Application) : AndroidViewModel(app) {
-    private val database = getDatabase(app)
+class OverviewViewModel(app: Application, private val database: LocalDatabase) :
+    AndroidViewModel(app) {
     private var _plans = database.travelPlanDao.getTravelPlansWithActivity()
 
     val plansWithActivity: LiveData<List<TravelPlanWithActivity>>
         get() = _plans
+
+    val reachedTravelActivity = MutableLiveData<TravelActivity?>()
+    fun refreshReachedTravelActivity(id: String) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                database.activityDao.get(id)?.let { travelActivity ->
+                    reachedTravelActivity.value = travelActivity
+                }
+            }
+        }
+    }
 
     val plans = Transformations.map(plansWithActivity) { _plansWithActivity ->
         _plansWithActivity.map {
@@ -49,21 +60,19 @@ class OverviewViewModel(app: Application) : AndroidViewModel(app) {
         refreshTravelPlanWithActivity()
     }
 
-    fun refreshTravelPlanWithActivity() {
+    private fun refreshTravelPlanWithActivity() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                seedDatabase(database)
+//                seedDatabase(database)
             }
         }
     }
 
-    class Factory(private val app: Application) : ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(OverviewViewModel::class.java)) {
-                @Suppress("UNCHECKED_CAST")
-                return OverviewViewModel(app) as T
+    fun createPlan(name: String) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                database.travelPlanDao.insert(TravelPlanCTO(name))
             }
-            throw IllegalArgumentException("Unable to construct viewmodel")
         }
     }
 }

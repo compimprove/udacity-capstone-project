@@ -9,19 +9,19 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.compi.dinhnt.travelplanner.databinding.ActivityItemBinding
-import com.compi.dinhnt.travelplanner.model.Activity
+import com.compi.dinhnt.travelplanner.model.TravelActivity
 
 
 class ActivityListAdapter(private val onClickListener: OnClickListener) :
-    ListAdapter<Activity, ActivityListAdapter.ActivityViewHolder>(DiffCallback) {
+    ListAdapter<TravelActivity, ActivityListAdapter.ActivityViewHolder>(DiffCallback) {
 
-    companion object DiffCallback : DiffUtil.ItemCallback<Activity>() {
-        override fun areItemsTheSame(oldItem: Activity, newItem: Activity): Boolean {
+    companion object DiffCallback : DiffUtil.ItemCallback<TravelActivity>() {
+        override fun areItemsTheSame(oldItem: TravelActivity, newItem: TravelActivity): Boolean {
             return oldItem.id == newItem.id
         }
 
         @SuppressLint("DiffUtilEquals")
-        override fun areContentsTheSame(oldItem: Activity, newItem: Activity): Boolean {
+        override fun areContentsTheSame(oldItem: TravelActivity, newItem: TravelActivity): Boolean {
             return oldItem === newItem
         }
     }
@@ -47,18 +47,21 @@ class ActivityListAdapter(private val onClickListener: OnClickListener) :
 
     class ActivityViewHolder(private var binding: ActivityItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(activity: Activity, position: Int) {
+        fun bind(travelActivity: TravelActivity, position: Int) {
             if (position == 0) {
                 binding.lineTopImage.visibility = INVISIBLE
             } else {
                 binding.lineTopImage.visibility = VISIBLE
             }
-            binding.activity = activity
+            travelActivity.weather?.weatherDetail?.let {
+                binding.weatherIcon.setImageResource(it.getIcon())
+            }
+            binding.activity = travelActivity
             binding.executePendingBindings()
         }
     }
 
-    class OnClickListener(val clickListener: (travelPlan: Activity) -> Unit) {
-        fun onClick(travelPlan: Activity) = clickListener(travelPlan)
+    class OnClickListener(val clickListener: (travelPlan: TravelActivity) -> Unit) {
+        fun onClick(travelPlan: TravelActivity) = clickListener(travelPlan)
     }
 }

@@ -21,7 +21,7 @@
         tools:layout="@layout/fragment_travel_plan_detail">
         <argument
             android:name="travelPlanId"
-            app:argType="long" />
+            app:argType="string" />
         <action
             android:id="@+id/action_to_createEditActivity"
             app:destination="@id/createEditActivityFragment" />
@@ -33,7 +33,7 @@
         tools:layout="@layout/fragment_create_edit_activity">
         <argument
             android:name="travelPlanId"
-            app:argType="long" />
+            app:argType="string" />
         <argument
             android:name="day"
             app:argType="string" />

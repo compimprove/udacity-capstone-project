@@ -5,7 +5,6 @@
     tools:context=".screen.CreateEditActivityFragment">
 
     <data>
-
         <variable
             name="viewModel"
             type="com.compi.dinhnt.travelplanner.view_model.CreateEditActivityViewModel" />
@@ -50,9 +49,8 @@
                         android:layout_width="110dp"
                         android:layout_height="55dp"
                         android:layout_marginStart="8dp"
-                        android:backgroundTint="@color/blue_500"
                         android:text="@string/TAXI"
-                        android:textColor="@color/white"
+                        android:textColor="@color/black"
                         app:layout_constraintStart_toEndOf="@+id/button_hotel"
                         app:layout_constraintTop_toTopOf="@+id/button_hotel" />
 
@@ -94,8 +92,8 @@
                     android:id="@+id/labelNameActivity_textView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="Name *"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/name_require"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
 
@@ -110,9 +108,9 @@
                     app:layout_constraintTop_toBottomOf="@+id/labelNameActivity_textView">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:text="@={viewModel.activityName}"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:text="@={viewModel.activityName}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -121,7 +119,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Date *"
+                    android:text="@string/date_require"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/nameTextField" />
 
@@ -130,7 +128,7 @@
                     style="?attr/materialButtonOutlinedStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="63dp"
-                    android:text="Choose Date"
+                    android:text="@string/choose_date"
                     android:textColor="@color/black"
                     app:layout_constraintEnd_toStartOf="@+id/input_time"
                     app:layout_constraintHorizontal_bias="0.0"
@@ -142,7 +140,7 @@
                     android:id="@+id/textView8"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Time *"
+                    android:text="@string/time_require"
                     app:layout_constraintStart_toStartOf="@+id/input_time"
                     app:layout_constraintTop_toTopOf="@+id/textView7" />
 
@@ -151,7 +149,7 @@
                     style="?attr/materialButtonOutlinedStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="63dp"
-                    android:text="Choose Time"
+                    android:text="@string/choose_time"
                     android:textColor="@color/black"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.7"
@@ -163,7 +161,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="What will you do?"
+                    android:text="@string/what_will_you_do"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -172,7 +170,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Choose your place"
+                    android:text="@string/choose_your_place"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/input_date" />
 
@@ -192,7 +190,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Note"
+                    android:text="@string/note"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/buttonChooseLocation" />
 
@@ -201,19 +199,19 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:tooltipText="Additional Note"
+                    android:tooltipText="@string/addtional_note"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView10">
 
                     <EditText
                         android:id="@+id/note_editText"
-                        android:text="@={viewModel.note}"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:ems="10"
                         android:gravity="start|top"
                         android:inputType="textMultiLine"
+                        android:text="@={viewModel.note}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/textView10" />
@@ -227,14 +225,29 @@
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/saveActivity"
-            android:onClick="@{() -> viewModel.saveActivity()}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
             android:layout_marginEnd="@dimen/margin_normal"
             android:layout_marginBottom="@dimen/margin_normal"
+            android:onClick="@{() -> viewModel.saveActivity()}"
             android:src="@drawable/ic_save"
+            app:fabSize="normal" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/cancel_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:onClick="@{() -> viewModel.onCancel()}"
+            android:layout_marginEnd="100dp"
+            android:layout_marginBottom="@dimen/margin_normal"
+            android:layout_toStartOf="@+id/saveActivity"
+            app:backgroundTint="@color/red_500"
+            android:backgroundTint="@color/white"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
             app:fabSize="normal" />
     </RelativeLayout>
 
