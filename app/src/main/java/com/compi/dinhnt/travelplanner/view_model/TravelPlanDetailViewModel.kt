@@ -5,6 +5,7 @@ import androidx.lifecycle.*
 import com.compi.dinhnt.travelplanner.database.getDatabase
 import com.compi.dinhnt.travelplanner.model.TravelPlanCTO
 import com.compi.dinhnt.travelplanner.model.TravelPlanWithActivity
+import com.compi.dinhnt.travelplanner.utils.TravelPlanUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -18,7 +19,8 @@ class TravelPlanDetailViewModel(
     fun editPlan(id: String, name: String) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                database.travelPlanDao.update(TravelPlanCTO(name, null, id))
+                val imageUrl = TravelPlanUtils.searchImage(name)
+                database.travelPlanDao.update(TravelPlanCTO(name, imageUrl, id))
             }
         }
     }

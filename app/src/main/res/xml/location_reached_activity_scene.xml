@@ -6,6 +6,7 @@
         <Constraint
             android:id="@+id/reachedLocationTitle"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
             app:layout_constraintBottom_toTopOf="@+id/locationTitle"
             app:layout_constraintStart_toEndOf="parent" />
         <Constraint
@@ -41,6 +42,7 @@
             android:id="@id/reachedLocationTitle"
             android:layout_height="wrap_content"
             android:alpha="1"
+            android:layout_marginBottom="16dp"
             app:layout_constraintBottom_toTopOf="@+id/locationTitle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

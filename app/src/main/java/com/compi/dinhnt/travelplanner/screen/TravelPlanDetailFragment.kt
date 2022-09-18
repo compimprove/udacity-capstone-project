@@ -110,7 +110,9 @@ class TravelPlanDetailFragment : Fragment() {
                 popupView.performClick()
             }
             popupView.saveTravelPlanButton.setOnClickListener {
+                popupView.saveTravelPlanButton.isEnabled = false
                 viewModel.editPlan(travelPlanCTO.id, popupView.planNameTF.text.toString())
+                popupWindow.dismiss()
             }
             popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
             true

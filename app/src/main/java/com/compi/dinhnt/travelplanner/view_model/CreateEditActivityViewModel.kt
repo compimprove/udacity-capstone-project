@@ -48,6 +48,7 @@ class CreateEditActivityViewModel(app: Application, private val database: LocalD
         time = MutableLiveData<Long>()
         date = MutableLiveData<Long>()
         navigateBack = MutableLiveData(false)
+        note = MutableLiveData<String?>()
     }
 
     fun navigateBack() {

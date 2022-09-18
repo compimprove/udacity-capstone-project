@@ -33,3 +33,4 @@ fun JSONObject.getWeather(date: Date): WeatherDetail? {
         null
     }
 }
+

@@ -11,16 +11,16 @@ data class TravelPlan(
     val id: String,
     val name: String,
     val activityNumber: Int,
+    val imageUrl: String? = null,
     val startDate: Date?,
-    val endDate: Date?,
-    val weathers: List<Weather>? = null
+    val endDate: Date?
 )
 
 
 @Entity(tableName = "travelplan")
 data class TravelPlanCTO(
     val name: String,
-    val weathers: List<Weather>? = null,
+    val imageUrl: String? = null,
     @PrimaryKey
     val id: String = UUID.randomUUID().toString()
 ) {

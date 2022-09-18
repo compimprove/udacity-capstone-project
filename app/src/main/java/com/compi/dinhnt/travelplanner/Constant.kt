@@ -2,7 +2,9 @@ package com.compi.dinhnt.travelplanner
 
 object Constant {
     const val WEATHER_API_KEY = BuildConfig.WEATHER_API_KEY
+    const val PEXEL_API_KEY = BuildConfig.PEXEL_API_KEY
     const val OPEN_WEATHER_URL = "https://api.openweathermap.org/"
+    const val PEXEL_URL = "https://api.pexels.com/"
 }
 
 object NewUserConstant {

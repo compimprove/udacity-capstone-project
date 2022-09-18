@@ -48,7 +48,9 @@ class OverviewFragment : Fragment() {
             popupView.performClick()
         }
         popupView.saveTravelPlanButton.setOnClickListener {
+            popupView.saveTravelPlanButton.isEnabled = false
             viewModel.createPlan(popupView.planNameTF.text.toString())
+            popupWindow.dismiss()
         }
         binding.createPlanButton.setOnClickListener {
             popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0)

@@ -3,10 +3,12 @@ package com.compi.dinhnt.travelplanner.view_model
 import android.app.Application
 import androidx.lifecycle.*
 import com.compi.dinhnt.travelplanner.database.LocalDatabase
+import com.compi.dinhnt.travelplanner.database.seedSampleData
 import com.compi.dinhnt.travelplanner.model.TravelActivity
 import com.compi.dinhnt.travelplanner.model.TravelPlan
 import com.compi.dinhnt.travelplanner.model.TravelPlanCTO
 import com.compi.dinhnt.travelplanner.model.TravelPlanWithActivity
+import com.compi.dinhnt.travelplanner.utils.TravelPlanUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -49,9 +51,9 @@ class OverviewViewModel(app: Application, private val database: LocalDatabase) :
                 it.travelPlanCTO.id,
                 it.travelPlanCTO.name,
                 it.activities.size,
+                it.travelPlanCTO.imageUrl,
                 startDate,
                 endDate,
-                it.travelPlanCTO.weathers,
             )
         }
     }
@@ -63,7 +65,7 @@ class OverviewViewModel(app: Application, private val database: LocalDatabase) :
     private fun refreshTravelPlanWithActivity() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-//                seedDatabase(database)
+                seedSampleData(database)
             }
         }
     }
@@ -71,7 +73,8 @@ class OverviewViewModel(app: Application, private val database: LocalDatabase) :
     fun createPlan(name: String) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                database.travelPlanDao.insert(TravelPlanCTO(name))
+                val imageUrl = TravelPlanUtils.searchImage(name)
+                database.travelPlanDao.insert(TravelPlanCTO(name, imageUrl))
             }
         }
     }

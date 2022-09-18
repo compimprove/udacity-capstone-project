@@ -2,7 +2,9 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
     <data>
+
         <variable
             name="travelPlan"
             type="com.compi.dinhnt.travelplanner.model.TravelPlan" />
@@ -12,18 +14,33 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <ImageView
+            android:id="@+id/travelPlanImage"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_width="150dp"
+            android:layout_height="100dp"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            app:imageUrl="@{travelPlan.imageUrl}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@tools:sample/backgrounds/scenic" />
+
         <TextView
             android:id="@+id/reachedLocationTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="32dp"
             android:text="@{travelPlan.name}"
             android:textColor="@color/black"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/travelPlanImage"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="New Your Trip" />
 
@@ -38,29 +55,17 @@
             app:subtitleTravelPlan="@{travelPlan}"
             tools:text="Jun 1 - Jun 10" />
 
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/reachedLocationTitle"
-            app:layout_constraintStart_toStartOf="@+id/reachedLocationTitle"
-            app:layout_constraintTop_toBottomOf="@+id/subtitle"
-            app:srcCompat="@drawable/shape_rectangle"
-            app:tint="#12000000" />
-
         <!--        <ImageView-->
-<!--            android:id="@+id/imageView"-->
-<!--            android:layout_width="100dp"-->
-<!--            android:layout_height="80dp"-->
-<!--            android:layout_marginStart="16dp"-->
-<!--            android:layout_marginTop="8dp"-->
-<!--            android:layout_marginBottom="16dp"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="parent"-->
-<!--            tools:srcCompat="@tools:sample/backgrounds/scenic" />-->
+        <!--            android:id="@+id/travelPlanImage"-->
+        <!--            android:layout_width="100dp"-->
+        <!--            android:layout_height="80dp"-->
+        <!--            android:layout_marginStart="16dp"-->
+        <!--            android:layout_marginTop="8dp"-->
+        <!--            android:layout_marginBottom="16dp"-->
+        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toTopOf="parent"-->
+        <!--            tools:srcCompat="@tools:sample/backgrounds/scenic" />-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
