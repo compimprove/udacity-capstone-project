@@ -9,6 +9,9 @@ In the future the app will support booking feature for user to make booking easi
 - The activity contains the name, time, location and some notes from user (location and note aren't required)
 - If user choose location for their activity, a geofence request will be created and show notification when it's been reached. Click on notification will lead user to the detail activity screen, from there user can go back to their plan.
 - Additionally, the weather of the location will be updated in the activity to help user aware
+
+<br>
+
 # PROJECT SPECIFICATION
 
 ## Android UI/UX
@@ -44,3 +47,13 @@ In the future the app will support booking feature for user to make booking easi
 - Handling Android Permissions (location, background location)
 ### Utilize system hardware to provide the user with advanced functionality and features.
 - Using location service, background location  and Notification
+
+<br>
+
+# Project Api Key
+
+The application using:
+- Google map api service (The key is implemented in Manifest file )
+- Pexel service, you can get Pexel api key by follow [this guide](https://help.pexels.com/hc/en-us/articles/900004904026-How-do-I-get-an-API-key-)
+- [Open weather api](https://openweathermap.org/api), you can get the key by registering account there and navigate to API section
+- Pexel and open weather api key is implemented in gradle.properties file
