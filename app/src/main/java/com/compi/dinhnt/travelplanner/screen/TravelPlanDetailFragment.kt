@@ -7,10 +7,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.LinearLayout
 import android.widget.PopupWindow
-import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.compi.dinhnt.travelplanner.R
@@ -19,11 +16,9 @@ import com.compi.dinhnt.travelplanner.databinding.FragmentTravelPlanDetailBindin
 import com.compi.dinhnt.travelplanner.setDisplayHomeAsUpEnabled
 import com.compi.dinhnt.travelplanner.setTitle
 import com.compi.dinhnt.travelplanner.view_model.TravelPlanDetailViewModel
-import com.google.android.gms.maps.GoogleMap
 import kotlinx.android.synthetic.main.fragment_travel_plan_detail.view.*
 import kotlinx.android.synthetic.main.popup_create_travel_plan.view.*
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import org.koin.android.ext.android.inject
 
 
 class TravelPlanDetailFragment : Fragment() {
@@ -31,32 +26,24 @@ class TravelPlanDetailFragment : Fragment() {
     private lateinit var popupView: View
     private lateinit var popupWindow: PopupWindow
     private lateinit var travelPlanId: String
-    private lateinit var viewModel: TravelPlanDetailViewModel
+    private val viewModel: TravelPlanDetailViewModel by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         val binding = FragmentTravelPlanDetailBinding.inflate(inflater, container, false)
-        val activity = requireNotNull(this.activity)
         travelPlanId = TravelPlanDetailFragmentArgs.fromBundle(requireArguments()).travelPlanId
-        viewModel = ViewModelProvider(
-            this,
-            TravelPlanDetailViewModel.Factory(activity.application, travelPlanId)
-        )[TravelPlanDetailViewModel::class.java]
+        viewModel.setTravelPlanId(travelPlanId)
         val adapter = TravelPlanWithActivitiesPageAdapter(
-            requireActivity(),
+            childFragmentManager,
+            viewLifecycleOwner.lifecycle,
             binding.tabLayout,
-            binding.viewPager,
-            { day -> onCreateActivity(day) },
-            { day, activityId -> onEditActivity(day, activityId) }
+            binding.viewPager
         )
         binding.viewPager.adapter = adapter
         binding.emptyActivityConstraintLayout.buttonCreateActivity.setOnClickListener {
             onCreateActivity("")
-        }
-        binding.viewPager.doOnPreDraw {
-            binding.viewPager.currentItem = viewModel.currentPage.value!!
         }
         binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
@@ -73,8 +60,22 @@ class TravelPlanDetailFragment : Fragment() {
             } else {
                 binding.emptyActivityConstraintLayout.visibility = GONE
                 binding.detailActivityLinearLayout.visibility = VISIBLE
-                adapter.setTravelPlan(data)
                 setTitle(data.travelPlanCTO.name)
+            }
+        }
+        viewModel.mapTravelPlanWithActivity.observe(viewLifecycleOwner) { data ->
+            adapter.updateTabs(data)
+        }
+        viewModel.createActivity.observe(viewLifecycleOwner) {
+            if (it != "") {
+                viewModel.receiveCreateActivityEvent()
+                onCreateActivity(it)
+            }
+        }
+        viewModel.editActivity.observe(viewLifecycleOwner) {
+            if (it.first != "" && it.second != "") {
+                viewModel.receiveEditActivityEvent()
+                onEditActivity(it.first, it.second)
             }
         }
         makePopupEdit(inflater)

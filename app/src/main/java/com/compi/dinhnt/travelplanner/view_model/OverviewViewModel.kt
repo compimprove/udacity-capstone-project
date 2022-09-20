@@ -65,7 +65,7 @@ class OverviewViewModel(app: Application, private val database: LocalDatabase) :
     private fun refreshTravelPlanWithActivity() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                seedSampleData(database)
+//                seedSampleData(database)
             }
         }
     }

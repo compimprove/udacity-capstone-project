@@ -6,6 +6,7 @@ import com.compi.dinhnt.travelplanner.database.getDatabase
 import com.compi.dinhnt.travelplanner.view_model.CreateEditActivityViewModel
 import com.compi.dinhnt.travelplanner.view_model.LocationReachedActivityViewModel
 import com.compi.dinhnt.travelplanner.view_model.OverviewViewModel
+import com.compi.dinhnt.travelplanner.view_model.TravelPlanDetailViewModel
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -37,6 +38,12 @@ class TravelPlannerApp : Application() {
             }
             single {
                 CreateEditActivityViewModel(
+                    get(),
+                    get() as LocalDatabase
+                )
+            }
+            single {
+                TravelPlanDetailViewModel(
                     get(),
                     get() as LocalDatabase
                 )

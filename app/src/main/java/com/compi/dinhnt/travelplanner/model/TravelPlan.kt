@@ -23,8 +23,7 @@ data class TravelPlanCTO(
     val imageUrl: String? = null,
     @PrimaryKey
     val id: String = UUID.randomUUID().toString()
-) {
-}
+)
 
 
 

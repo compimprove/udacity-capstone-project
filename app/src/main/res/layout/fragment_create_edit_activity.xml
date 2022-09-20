@@ -10,13 +10,16 @@
             type="com.compi.dinhnt.travelplanner.view_model.CreateEditActivityViewModel" />
     </data>
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -33,17 +36,6 @@
                     app:layout_constraintTop_toBottomOf="@+id/textView6">
 
                     <Button
-                        android:id="@+id/button_hotel"
-                        style="?attr/materialButtonOutlinedStyle"
-                        android:layout_width="110dp"
-                        android:layout_height="55dp"
-                        android:layout_marginTop="4dp"
-                        android:text="@string/HOTEL"
-                        android:textColor="@color/black"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <Button
                         android:id="@+id/button_taxi"
                         style="?attr/materialButtonOutlinedStyle"
                         android:layout_width="110dp"
@@ -51,18 +43,32 @@
                         android:layout_marginStart="8dp"
                         android:text="@string/TAXI"
                         android:textColor="@color/black"
+                        app:layout_constraintEnd_toStartOf="@+id/button_playing"
+                        app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toEndOf="@+id/button_hotel"
                         app:layout_constraintTop_toTopOf="@+id/button_hotel" />
+
+                    <Button
+                        android:id="@+id/button_hotel"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="110dp"
+                        android:layout_height="55dp"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/HOTEL"
+                        android:textColor="@color/black"
+                        app:layout_constraintEnd_toStartOf="@+id/button_taxi"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <Button
                         android:id="@+id/button_eating"
                         style="?attr/materialButtonOutlinedStyle"
                         android:layout_width="110dp"
                         android:layout_height="55dp"
-                        android:layout_marginStart="8dp"
                         android:text="@string/EATING"
                         android:textColor="@color/black"
-                        app:layout_constraintStart_toEndOf="@+id/button_flight"
+                        app:layout_constraintStart_toStartOf="@+id/button_taxi"
                         app:layout_constraintTop_toTopOf="@+id/button_flight" />
 
                     <Button
@@ -73,6 +79,8 @@
                         android:layout_marginStart="8dp"
                         android:text="@string/PLAYING"
                         android:textColor="@color/black"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toEndOf="@+id/button_taxi"
                         app:layout_constraintTop_toTopOf="@+id/button_hotel" />
 
@@ -83,7 +91,7 @@
                         android:layout_height="55dp"
                         android:text="@string/FLIGHT"
                         android:textColor="@color/black"
-                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/button_hotel"
                         app:layout_constraintTop_toBottomOf="@+id/button_hotel" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
@@ -199,7 +207,9 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_large"
                     android:tooltipText="@string/addtional_note"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView10">
@@ -226,30 +236,28 @@
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/saveActivity"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="@dimen/margin_small"
             android:layout_marginEnd="@dimen/margin_normal"
-            android:layout_marginBottom="@dimen/margin_normal"
+            android:layout_height="wrap_content"
             android:onClick="@{() -> viewModel.saveActivity()}"
             android:src="@drawable/ic_save"
-            app:fabSize="normal" />
+            app:fabSize="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/cancel_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:onClick="@{() -> viewModel.onCancel()}"
-            android:layout_marginEnd="100dp"
-            android:layout_marginBottom="@dimen/margin_normal"
-            android:layout_toStartOf="@+id/saveActivity"
-            app:backgroundTint="@color/red_500"
+            android:layout_marginEnd="@dimen/margin_normal"
             android:backgroundTint="@color/white"
+            android:onClick="@{() -> viewModel.onCancel()}"
             android:src="@android:drawable/ic_menu_close_clear_cancel"
-            app:fabSize="normal" />
-    </RelativeLayout>
+            app:backgroundTint="@color/red_500"
+            app:fabSize="normal"
+            app:layout_constraintBottom_toBottomOf="@+id/saveActivity"
+            app:layout_constraintEnd_toStartOf="@+id/saveActivity" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 

@@ -1,7 +1,8 @@
 package com.compi.dinhnt.travelplanner.adapter
 
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.adapter.FragmentViewHolder
 import androidx.viewpager2.widget.ViewPager2
@@ -12,32 +13,22 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import java.text.ParseException
 import java.text.SimpleDateFormat
+import java.util.*
 
 
 class TravelPlanWithActivitiesPageAdapter(
-    fa: FragmentActivity,
+    fa: FragmentManager,
+    lifecycle: Lifecycle,
     private val tabLayout: TabLayout,
     private val viewPager: ViewPager2,
-    private val onCreateActivity: (day: String) -> Unit,
-    private val onEditActivity: (day: String, activityId: String) -> Unit
-) : FragmentStateAdapter(fa) {
+) : FragmentStateAdapter(fa, lifecycle) {
     private val formatter = SimpleDateFormat("yyyy-MM-dd")
-    private var _travelPlanWithActivity: TravelPlanWithActivity? = null
     private var mapTravelPlanWithActivities = sortedMapOf<String, MutableList<TravelActivity>>()
     private var tabLayoutMediator: TabLayoutMediator? = null
-    private val createdFragment = mutableMapOf<Int, DayActivityDetail>()
 
-    
 
     override fun createFragment(position: Int): Fragment {
-        val entry = mapTravelPlanWithActivities.entries.toTypedArray()[position]
-        val fragment = DayActivityDetail
-            .newInstance(entry.key,
-                entry.value,
-                { day -> onCreateActivity(day) },
-                { day, activityId -> onEditActivity(day, activityId) })
-        createdFragment[position] = fragment
-        return fragment
+        return DayActivityDetail.newInstance(position)
     }
 
     override fun onBindViewHolder(
@@ -49,25 +40,11 @@ class TravelPlanWithActivitiesPageAdapter(
     }
 
     override fun getItemCount(): Int {
-        return if (_travelPlanWithActivity == null) {
-            0
-        } else {
-            mapTravelPlanWithActivities.entries.size
-        }
+        return mapTravelPlanWithActivities.entries.size
     }
 
-    fun setTravelPlan(travelPlanWithActivity: TravelPlanWithActivity) {
-        if (travelPlanWithActivity.activities.isEmpty()) return
-        _travelPlanWithActivity = travelPlanWithActivity
-        mapTravelPlanWithActivities.clear()
-        travelPlanWithActivity.activities.forEach {
-            val dateStr = formatter.format(it.date)
-            if (!mapTravelPlanWithActivities.containsKey(dateStr)) {
-                mapTravelPlanWithActivities[dateStr] = mutableListOf(it)
-            } else {
-                mapTravelPlanWithActivities[dateStr]?.add(it)
-            }
-        }
+    fun updateTabs(mapTravelPlanWithActivities: SortedMap<String, MutableList<TravelActivity>>) {
+        this.mapTravelPlanWithActivities = mapTravelPlanWithActivities
         val tabs = mutableListOf<String>()
         val monthFormatter = SimpleDateFormat("MMM dd")
         mapTravelPlanWithActivities.entries.forEach { entry ->
@@ -84,14 +61,6 @@ class TravelPlanWithActivitiesPageAdapter(
             tabLayout, viewPager
         ) { tab: TabLayout.Tab, position: Int -> tab.text = tabs[position] }
         tabLayoutMediator?.attach()
-        updateData()
-    }
-
-    private fun updateData() {
-        createdFragment.entries.forEach {entry->
-            val data = mapTravelPlanWithActivities.entries.toTypedArray()[entry.key]
-            entry.value.updateData(data.value)
-        }
     }
 
 }
