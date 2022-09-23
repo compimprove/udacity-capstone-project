@@ -9,6 +9,7 @@ import com.compi.dinhnt.travelplanner.model.ActivityType
 import com.compi.dinhnt.travelplanner.model.Location
 import com.compi.dinhnt.travelplanner.network.Network
 import com.compi.dinhnt.travelplanner.network.getWeather
+import com.compi.dinhnt.travelplanner.screen.CreateEditActivityFragment.Companion.Key.activityId
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -19,8 +20,8 @@ import java.util.*
 
 class CreateEditActivityViewModel(app: Application, private val database: LocalDatabase) :
     AndroidViewModel(app) {
-    private var activityId: String? = null
-    private var travelPlanId: String = ""
+    var activityId: String? = null
+    var travelPlanId: String = ""
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd")
 
     var activityType = MutableLiveData<ActivityType>()
@@ -55,40 +56,46 @@ class CreateEditActivityViewModel(app: Application, private val database: LocalD
         navigateBack.value = true
     }
 
-    fun init(travelPlanId: String, day: String, id: String) {
+    fun initOnce(travelPlanId: String, day: String, id: String) {
         this.travelPlanId = travelPlanId
         if (id != "") {
             activityId = id
             viewModelScope.launch {
                 val activity = database.activityDao.get(id) ?: return@launch
-                if (activityName.value == null) {
-                    activityName.value = activity.name
-                }
-                if (activityType.value == null) {
-                    activityType.value = activity.type
-                }
-                if (time.value == null) {
-                    time.value = activity.time
-                }
-                if (date.value == null) {
-                    date.value = activity.date.time
-                }
-                if (locationName.value == null) {
-                    locationName.value = activity.location?.locationName
-                }
-                if (longitude.value == null) {
-                    longitude.value = activity.location?.longitude
-                }
-                if (latitude.value == null) {
-                    latitude.value = activity.location?.latitude
-                }
-                if (note.value == null) {
-                    note.value = activity.note
-                }
+                activityName.value = activity.name
+                activityType.value = activity.type
+                time.value = activity.time
+                date.value = activity.date.time
+                locationName.value = activity.location?.locationName
+                longitude.value = activity.location?.longitude
+                latitude.value = activity.location?.latitude
+                note.value = activity.note
             }
         } else if (day != "") {
             date.value = dateFormat.parse(day)?.time
         }
+    }
+
+    fun initFromRestoreState(
+        id: String?,
+        _activityName: String,
+        _activityType: ActivityType,
+        _activityTime: Long,
+        _activityDateTime: Long,
+        activityLocationName: String? = null,
+        activityLongitude: Double? = null,
+        activityLatitude: Double? = null,
+        activityNote: String?
+    ) {
+        activityId = id
+        activityName.value = _activityName
+        activityType.value = _activityType
+        time.value = _activityTime
+        date.value = _activityDateTime
+        activityLocationName?.let { locationName.value = it }
+        activityLongitude?.let { longitude.value = it }
+        activityLatitude?.let { latitude.value = it }
+        note.value = activityNote
     }
 
     fun setLocation(latLong: LatLng, _locationName: String) {
@@ -177,6 +184,10 @@ class CreateEditActivityViewModel(app: Application, private val database: LocalD
         } else {
             return true
         }
+    }
+
+    fun receivedNavigateBackEvent() {
+        navigateBack.value = false
     }
 //
 //    class Factory(

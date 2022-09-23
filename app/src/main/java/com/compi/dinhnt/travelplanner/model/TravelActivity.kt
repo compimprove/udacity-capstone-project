@@ -99,12 +99,23 @@ enum class ActivityType {
         TAXI -> R.drawable.ic_taxi
     }
 
-    fun toString(resources: Resources) = when (this) {
-        HOTEL -> resources.getString(R.string.HOTEL)
-        FLIGHT -> resources.getString(R.string.FLIGHT)
-        EATING -> resources.getString(R.string.EATING)
-        PLAYING -> resources.getString(R.string.PLAYING)
-        TAXI -> resources.getString(R.string.TAXI)
+    override fun toString() = when (this) {
+        HOTEL -> "Hotel"
+        FLIGHT -> "Flight"
+        EATING -> "Eating"
+        PLAYING -> "Playing"
+        TAXI -> "Taxi"
+    }
+
+    companion object {
+        fun fromString(s: String?) = when (s) {
+            "Hotel" -> HOTEL
+            "Flight" -> FLIGHT
+            "Eating" -> EATING
+            "Playing" -> PLAYING
+            "Taxi" -> TAXI
+            else -> HOTEL
+        }
     }
 }
 

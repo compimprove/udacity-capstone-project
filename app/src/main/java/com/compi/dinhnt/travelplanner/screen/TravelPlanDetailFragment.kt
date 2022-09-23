@@ -53,7 +53,6 @@ class TravelPlanDetailFragment : Fragment() {
         })
         viewModel.travelPlanWithActivity.observe(viewLifecycleOwner) { data ->
             if (data == null) return@observe
-            binding.loadingLayout.visibility = GONE
             if (data.activities.isEmpty()) {
                 binding.emptyActivityConstraintLayout.visibility = VISIBLE
                 binding.detailActivityLinearLayout.visibility = GONE

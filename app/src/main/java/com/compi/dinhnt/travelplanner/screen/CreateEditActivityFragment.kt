@@ -15,7 +15,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.navigation.fragment.findNavController
 import com.compi.dinhnt.travelplanner.ACTION_GEOFENCE_EVENT
@@ -25,6 +24,7 @@ import com.compi.dinhnt.travelplanner.databinding.FragmentCreateEditActivityBind
 import com.compi.dinhnt.travelplanner.geofence.GeofenceBroadcastReceiver
 import com.compi.dinhnt.travelplanner.model.TravelActivity
 import com.compi.dinhnt.travelplanner.model.ActivityType
+import com.compi.dinhnt.travelplanner.screen.CreateEditActivityFragment.Companion.Key.activityId
 import com.compi.dinhnt.travelplanner.setDisplayHomeAsUpEnabled
 import com.compi.dinhnt.travelplanner.view_model.CreateEditActivityViewModel
 import com.google.android.gms.common.api.ResolvableApiException
@@ -34,7 +34,6 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
-import org.koin.android.ext.android.bind
 import org.koin.android.ext.android.inject
 import java.text.SimpleDateFormat
 import java.util.*
@@ -75,8 +74,15 @@ class CreateEditActivityFragment : Fragment() {
             val day = CreateEditActivityFragmentArgs.fromBundle(requireArguments()).day
             val activityId =
                 CreateEditActivityFragmentArgs.fromBundle(requireArguments()).activityId
-            viewModel.init(travelPlanId, day, activityId)
+            Log.i("CreateEdit onCreateView", "$travelPlanId $day $activityId")
+            viewModel.initOnce(travelPlanId, day, activityId)
+            requireArguments().clear()
         } catch (e: Exception) {
+            savedInstanceState?.let {
+                Log.i("CreateEdit", "restore savedInstanceState")
+                restoreBundleToViewModel(it)
+                it.clear()
+            }
         }
         geofencingClient = LocationServices.getGeofencingClient(requireActivity())
         makeButtons()
@@ -107,6 +113,7 @@ class CreateEditActivityFragment : Fragment() {
         }
         viewModel.navigateBack.observe(viewLifecycleOwner) {
             if (it) {
+                viewModel.receivedNavigateBackEvent()
                 findNavController().popBackStack()
             }
         }
@@ -114,6 +121,41 @@ class CreateEditActivityFragment : Fragment() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
         return binding.root
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString(Key.activityId, viewModel.activityId)
+        outState.putString(Key.activityName, viewModel.activityName.value)
+        outState.putString(Key.activityType, viewModel.activityType.value?.toString())
+        outState.putString(Key.travelPlanId, viewModel.travelPlanId)
+        viewModel.time.value?.let {
+            outState.putLong(Key.activityTime, it)
+        }
+        viewModel.date.value?.let {
+            outState.putLong(Key.activityDateTime, it)
+        }
+        outState.putString(Key.activityLocationName, viewModel.locationName.value)
+        viewModel.longitude.value?.let {
+            outState.putDouble(Key.activityLongitude, it)
+        }
+        viewModel.latitude.value?.let {
+            outState.putDouble(Key.activityLatitude, it)
+        }
+        outState.putString(Key.activityNote, viewModel.note.value)
+        super.onSaveInstanceState(outState)
+    }
+
+    private fun restoreBundleToViewModel(state: Bundle) {
+        viewModel.travelPlanId = state.getString(Key.travelPlanId) ?: ""
+        viewModel.activityId = state.getString(Key.activityId)
+        viewModel.activityName.value = state.getString(Key.activityName)
+        viewModel.activityType.value = ActivityType.fromString(state.getString(Key.activityType))
+        viewModel.time.value = state.getLong(Key.activityTime)
+        viewModel.date.value = state.getLong(Key.activityDateTime)
+        viewModel.locationName.value = state.getString(Key.activityLocationName)
+        viewModel.longitude.value = state.getDouble(Key.activityLongitude)
+        viewModel.latitude.value = state.getDouble(Key.activityLatitude)
+        viewModel.note.value = state.getString(Key.activityNote)
     }
 
     private fun loseFocus() {
@@ -187,12 +229,6 @@ class CreateEditActivityFragment : Fragment() {
             }
             binding.labelNameActivityTextView.text = "${mapLabel[activityType]} *"
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModel.reset()
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -395,6 +431,20 @@ class CreateEditActivityFragment : Fragment() {
         private val CHOOSE_DATE = "chooseDate"
         private val REQUEST_TURN_DEVICE_LOCATION_ON = 29
         private val GEOFENCE_RADIUS_IN_METERS = 100f
+
+        object Key {
+            val travelPlanId = "travelPlanId"
+            val activityId = "activityId"
+            val activityName = "activityName"
+            val activityType = "activityType"
+            val activityTime = "activityTime"
+            val activityDateTime = "activityDateTime"
+            val activityLocationName = "activityLocationName"
+            val activityLongitude = "activityLongitude"
+            val activityLatitude = "activityLatitude"
+            val activityNote = "activityNote"
+        }
+
 
         @JvmStatic
         fun newInstance() =
